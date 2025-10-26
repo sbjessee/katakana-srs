@@ -1,0 +1,101 @@
+<div class="katakana-list-container">
+  <h1>All Katakana ({{ filteredKatakana.length }})</h1>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading katakana...</p>
+  </div>
+
+  <!-- Controls -->
+  <div *ngIf="!isLoading" class="controls">
+    <div class="filter-buttons">
+      <button
+        class="btn"
+        [class.btn-primary]="filterType === 'all'"
+        [class.btn-secondary]="filterType !== 'all'"
+        (click)="setFilter('all')"
+      >
+        All ({{ allKatakana.length }})
+      </button>
+      <button
+        class="btn"
+        [class.btn-primary]="filterType === 'basic'"
+        [class.btn-secondary]="filterType !== 'basic'"
+        (click)="setFilter('basic')"
+      >
+        Basic
+      </button>
+      <button
+        class="btn"
+        [class.btn-primary]="filterType === 'dakuten'"
+        [class.btn-secondary]="filterType !== 'dakuten'"
+        (click)="setFilter('dakuten')"
+      >
+        Dakuten
+      </button>
+      <button
+        class="btn"
+        [class.btn-primary]="filterType === 'combo'"
+        [class.btn-secondary]="filterType !== 'combo'"
+        (click)="setFilter('combo')"
+      >
+        Combo
+      </button>
+    </div>
+
+    <div class="sort-buttons">
+      <span>Sort by:</span>
+      <button
+        class="btn btn-sm"
+        [class.btn-primary]="sortBy === 'character'"
+        [class.btn-secondary]="sortBy !== 'character'"
+        (click)="setSortBy('character')"
+      >
+        Character
+      </button>
+      <button
+        class="btn btn-sm"
+        [class.btn-primary]="sortBy === 'stage'"
+        [class.btn-secondary]="sortBy !== 'stage'"
+        (click)="setSortBy('stage')"
+      >
+        Stage
+      </button>
+      <button
+        class="btn btn-sm"
+        [class.btn-primary]="sortBy === 'next_review'"
+        [class.btn-secondary]="sortBy !== 'next_review'"
+        (click)="setSortBy('next_review')"
+      >
+        Next Review
+      </button>
+    </div>
+  </div>
+
+  <!-- Katakana Grid -->
+  <div *ngIf="!isLoading" class="katakana-grid">
+    <div *ngFor="let item of filteredKatakana" class="katakana-card">
+      <div class="card-header" [style.border-color]="getStageColor(item.srs_stage)">
+        <div class="character-large">{{ item.character }}</div>
+        <div class="romaji">{{ item.romaji }}</div>
+      </div>
+      <div class="card-body">
+        <div class="info-row">
+          <span class="label">Stage:</span>
+          <span class="value" [style.color]="getStageColor(item.srs_stage)">
+            {{ getStageName(item.srs_stage) }}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="label">Next Review:</span>
+          <span class="value">{{ formatNextReview(item.next_review_date) }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Accuracy:</span>
+          <span class="value">{{ getAccuracy(item) }}% ({{ item.correct_count }}/{{ item.correct_count + item.incorrect_count }})</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

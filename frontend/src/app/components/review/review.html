@@ -1,0 +1,69 @@
+<div class="review-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading reviews...</p>
+  </div>
+
+  <!-- No Reviews / Complete State -->
+  <div *ngIf="!isLoading && isComplete" class="complete">
+    <div class="complete-icon">✓</div>
+    <h2>All Done!</h2>
+    <p *ngIf="reviews.length === 0">No reviews due right now. Great job!</p>
+    <p *ngIf="reviews.length > 0">You've completed {{ reviews.length }} reviews!</p>
+    <a routerLink="/dashboard" class="btn btn-primary">Back to Dashboard</a>
+  </div>
+
+  <!-- Review Session -->
+  <div *ngIf="!isLoading && !isComplete && currentReview" class="review-session">
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progress"></div>
+    </div>
+    <div class="progress-text">
+      {{ currentIndex + 1 }} / {{ reviews.length }}
+    </div>
+
+    <!-- Katakana Character Display -->
+    <div class="character-display" [class.correct]="showFeedback && isCorrect" [class.incorrect]="showFeedback && !isCorrect">
+      <div class="character">{{ currentReview.character }}</div>
+    </div>
+
+    <!-- Feedback Message -->
+    <div *ngIf="showFeedback" class="feedback" [class.correct]="isCorrect" [class.incorrect]="!isCorrect">
+      <div *ngIf="isCorrect" class="feedback-message">
+        <span class="feedback-icon">✓</span>
+        <span>Correct!</span>
+      </div>
+      <div *ngIf="!isCorrect" class="feedback-message">
+        <span class="feedback-icon">✗</span>
+        <span>Incorrect. The answer is: <strong>{{ currentReview.romaji }}</strong></span>
+      </div>
+    </div>
+
+    <!-- Answer Input -->
+    <div class="answer-section" *ngIf="!showFeedback">
+      <label for="answer">Enter the romaji:</label>
+      <input
+        type="text"
+        id="answer"
+        [(ngModel)]="userAnswer"
+        (keypress)="handleKeyPress($event)"
+        placeholder="Type your answer..."
+        autofocus
+        autocomplete="off"
+      />
+      <button class="btn btn-primary" (click)="submitAnswer()" [disabled]="!userAnswer.trim()">
+        Submit
+      </button>
+    </div>
+
+    <!-- Next Button (shown after feedback) -->
+    <div class="next-section" *ngIf="showFeedback">
+      <button class="btn btn-primary" (click)="nextReview()">
+        {{ currentIndex < reviews.length - 1 ? 'Next' : 'Finish' }}
+      </button>
+      <p class="hint">Press Enter to continue</p>
+    </div>
+  </div>
+</div>

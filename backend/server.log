@@ -1,0 +1,71 @@
+API routes module loaded
+Registering GET /reviews/due
+Registering GET /stats
+apiRoutes type: function
+apiRoutes: [Function: router] {
+  params: {},
+  _params: [],
+  caseSensitive: undefined,
+  mergeParams: undefined,
+  strict: undefined,
+  stack: [
+    Layer {
+      handle: [Function: bound dispatch],
+      name: 'bound dispatch',
+      params: undefined,
+      path: undefined,
+      keys: [],
+      regexp: /^\/test\/?$/i,
+      route: [Route]
+    },
+    Layer {
+      handle: [Function: bound dispatch],
+      name: 'bound dispatch',
+      params: undefined,
+      path: undefined,
+      keys: [],
+      regexp: /^\/reviews\/due\/?$/i,
+      route: [Route]
+    },
+    Layer {
+      handle: [Function: bound dispatch],
+      name: 'bound dispatch',
+      params: undefined,
+      path: undefined,
+      keys: [Array],
+      regexp: /^\/reviews(?:\/([^/]+?))\/answer\/?$/i,
+      route: [Route]
+    },
+    Layer {
+      handle: [Function: bound dispatch],
+      name: 'bound dispatch',
+      params: undefined,
+      path: undefined,
+      keys: [],
+      regexp: /^\/katakana\/?$/i,
+      route: [Route]
+    },
+    Layer {
+      handle: [Function: bound dispatch],
+      name: 'bound dispatch',
+      params: undefined,
+      path: undefined,
+      keys: [],
+      regexp: /^\/stats\/?$/i,
+      route: [Route]
+    },
+    Layer {
+      handle: [Function: bound dispatch],
+      name: 'bound dispatch',
+      params: undefined,
+      path: undefined,
+      keys: [],
+      regexp: /^\/reviews\/upcoming\/?$/i,
+      route: [Route]
+    }
+  ]
+}
+Routes mounted on /api
+Database initialized successfully
+Server is running on port 3000
+API endpoint: http://localhost:3000/api
