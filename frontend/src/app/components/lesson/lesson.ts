@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -14,6 +14,8 @@ type LessonMode = 'loading' | 'study' | 'quiz' | 'complete' | 'no-lessons';
   styleUrl: './lesson.scss'
 })
 export class LessonComponent implements OnInit {
+  @ViewChild('quizAnswerInput') quizAnswerInput?: ElementRef<HTMLInputElement>;
+
   mode: LessonMode = 'loading';
   currentBatch: LessonBatch | null = null;
   lessonItems: LessonItem[] = [];
@@ -143,6 +145,10 @@ export class LessonComponent implements OnInit {
       this.userAnswer = '';
       this.showQuizFeedback = false;
       this.isQuizCorrect = false;
+      // Focus the input field after the view updates
+      setTimeout(() => {
+        this.quizAnswerInput?.nativeElement.focus();
+      }, 0);
     } else {
       // Quiz complete
       this.completeLesson();
@@ -171,12 +177,30 @@ export class LessonComponent implements OnInit {
     return this.quizResults.filter(r => r).length;
   }
 
-  handleQuizKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
-      if (this.showQuizFeedback) {
-        this.nextQuizQuestion();
-      } else {
-        this.submitQuizAnswer();
+  @HostListener('window:keyup', ['$event'])
+  handleKeyPress(event: KeyboardEvent) {
+    // Don't handle keyboard events when loading, no lessons, or complete
+    if (this.mode === 'loading' || this.mode === 'no-lessons' || this.mode === 'complete') {
+      return;
+    }
+
+    // Study mode keyboard shortcuts
+    if (this.mode === 'study') {
+      if (event.key === 'Enter' || event.key === 'ArrowRight') {
+        this.nextStudyCard();
+      } else if (event.key === 'ArrowLeft') {
+        this.previousStudyCard();
+      }
+    }
+
+    // Quiz mode keyboard shortcuts
+    if (this.mode === 'quiz') {
+      if (event.key === 'Enter') {
+        if (this.showQuizFeedback) {
+          this.nextQuizQuestion();
+        } else {
+          this.submitQuizAnswer();
+        }
       }
     }
   }

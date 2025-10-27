@@ -9,29 +9,33 @@
 
   <!-- Dashboard Content -->
   <div *ngIf="!isLoading && stats" class="dashboard-content">
-    <!-- Lessons Available Section -->
-    <div class="hero-section lessons" *ngIf="stats.lessons_available > 0">
-      <h2>{{ stats.lessons_available }} Lessons Available!</h2>
-      <p>Learn new katakana characters</p>
-      <a routerLink="/lessons" class="btn btn-lg btn-primary">Start Lesson</a>
-    </div>
+    <!-- Hero Sections Grid -->
+    <div class="hero-grid">
+      <!-- Lessons Section -->
+      <div class="hero-section lessons" [class.available]="stats.lessons_available > 0" [class.empty]="stats.lessons_available === 0">
+        <div *ngIf="stats.lessons_available > 0">
+          <h2>{{ stats.lessons_available }} Lessons Available!</h2>
+          <p>Learn new katakana characters</p>
+          <a routerLink="/lessons" class="btn btn-lg btn-primary">Start Lesson</a>
+        </div>
+        <div *ngIf="stats.lessons_available === 0">
+          <h2>No Lessons Available</h2>
+          <p>You've completed all lessons!</p>
+        </div>
+      </div>
 
-    <!-- Reviews Available Section -->
-    <div class="hero-section" *ngIf="stats.reviews_due_now > 0 && stats.lessons_available === 0">
-      <h2>{{ stats.reviews_due_now }} Reviews Available!</h2>
-      <a routerLink="/review" class="btn btn-lg btn-primary">Start Reviews</a>
-    </div>
-
-    <div class="hero-section no-reviews" *ngIf="stats.reviews_due_now === 0 && stats.lessons_available === 0">
-      <h2>All Caught Up!</h2>
-      <p>No lessons or reviews due right now. Great work!</p>
-      <a routerLink="/katakana" class="btn btn-secondary">View All Katakana</a>
-    </div>
-
-    <!-- Secondary Action (if lessons available but also showing reviews) -->
-    <div class="secondary-action" *ngIf="stats.reviews_due_now > 0 && stats.lessons_available > 0">
-      <p>You also have {{ stats.reviews_due_now }} reviews available</p>
-      <a routerLink="/review" class="btn btn-secondary">Start Reviews</a>
+      <!-- Reviews Section -->
+      <div class="hero-section reviews" [class.available]="stats.reviews_due_now > 0" [class.empty]="stats.reviews_due_now === 0">
+        <div *ngIf="stats.reviews_due_now > 0">
+          <h2>{{ stats.reviews_due_now }} Reviews Available!</h2>
+          <p>Practice what you've learned</p>
+          <a routerLink="/review" class="btn btn-lg btn-primary">Start Reviews</a>
+        </div>
+        <div *ngIf="stats.reviews_due_now === 0">
+          <h2>0 Reviews Left</h2>
+          <p>You're done for now!</p>
+        </div>
+      </div>
     </div>
 
     <!-- Stats Grid -->

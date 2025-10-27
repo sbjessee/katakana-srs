@@ -45,10 +45,10 @@
     <div class="answer-section" *ngIf="!showFeedback">
       <label for="answer">Enter the romaji:</label>
       <input
+        #answerInput
         type="text"
         id="answer"
         [(ngModel)]="userAnswer"
-        (keypress)="handleKeyPress($event)"
         placeholder="Type your answer..."
         autofocus
         autocomplete="off"

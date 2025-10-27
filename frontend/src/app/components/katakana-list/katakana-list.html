@@ -75,25 +75,31 @@
 
   <!-- Katakana Grid -->
   <div *ngIf="!isLoading" class="katakana-grid">
-    <div *ngFor="let item of filteredKatakana" class="katakana-card">
-      <div class="card-header" [style.border-color]="getStageColor(item.srs_stage)">
+    <div *ngFor="let item of filteredKatakana" class="katakana-card" [class.not-learned]="!item.id">
+      <div class="card-header" [style.border-color]="item.id ? getStageColor(item.srs_stage) : 'var(--color-border)'">
         <div class="character-large">{{ item.character }}</div>
         <div class="romaji">{{ item.romaji }}</div>
       </div>
       <div class="card-body">
-        <div class="info-row">
-          <span class="label">Stage:</span>
-          <span class="value" [style.color]="getStageColor(item.srs_stage)">
-            {{ getStageName(item.srs_stage) }}
-          </span>
+        <div *ngIf="!item.id" class="not-learned-message">
+          <span class="label">Not yet learned</span>
+          <span class="value">Complete lessons to unlock</span>
         </div>
-        <div class="info-row">
-          <span class="label">Next Review:</span>
-          <span class="value">{{ formatNextReview(item.next_review_date) }}</span>
-        </div>
-        <div class="info-row">
-          <span class="label">Accuracy:</span>
-          <span class="value">{{ getAccuracy(item) }}% ({{ item.correct_count }}/{{ item.correct_count + item.incorrect_count }})</span>
+        <div *ngIf="item.id">
+          <div class="info-row">
+            <span class="label">Stage:</span>
+            <span class="value" [style.color]="getStageColor(item.srs_stage)">
+              {{ getStageName(item.srs_stage) }}
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="label">Next Review:</span>
+            <span class="value">{{ formatNextReview(item.next_review_date) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="label">Accuracy:</span>
+            <span class="value">{{ getAccuracy(item) }}% ({{ item.correct_count }}/{{ item.correct_count + item.incorrect_count }})</span>
+          </div>
         </div>
       </div>
     </div>

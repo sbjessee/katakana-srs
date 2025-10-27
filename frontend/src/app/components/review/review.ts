@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -12,6 +12,8 @@ import { ReviewWithKatakana } from '../../models/katakana.model';
   styleUrl: './review.scss'
 })
 export class ReviewComponent implements OnInit {
+  @ViewChild('answerInput') answerInput?: ElementRef<HTMLInputElement>;
+
   reviews: ReviewWithKatakana[] = [];
   currentIndex = 0;
   userAnswer = '';
@@ -78,10 +80,21 @@ export class ReviewComponent implements OnInit {
 
     if (this.currentIndex >= this.reviews.length) {
       this.isComplete = true;
+    } else {
+      // Focus the input field after the view updates
+      setTimeout(() => {
+        this.answerInput?.nativeElement.focus();
+      }, 0);
     }
   }
 
+  @HostListener('window:keyup', ['$event'])
   handleKeyPress(event: KeyboardEvent) {
+    // Only handle if we're in an active review session (not loading or complete)
+    if (this.isLoading || this.isComplete || !this.currentReview) {
+      return;
+    }
+
     if (event.key === 'Enter') {
       if (this.showFeedback) {
         this.nextReview();

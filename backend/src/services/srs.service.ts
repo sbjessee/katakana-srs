@@ -83,9 +83,9 @@ export class SRSService {
       SELECT
         r.id, r.katakana_id, r.srs_stage, r.next_review_date,
         r.correct_count, r.incorrect_count, r.last_reviewed, r.created_at,
-        k.character, k.romaji, k.type
-      FROM reviews r
-      JOIN katakana k ON r.katakana_id = k.id
+        k.id as katakana_id, k.character, k.romaji, k.type
+      FROM katakana k
+      LEFT JOIN reviews r ON r.katakana_id = k.id
       ORDER BY k.id ASC
     `;
 

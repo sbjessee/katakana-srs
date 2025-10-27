@@ -51,6 +51,17 @@
   box-shadow: var(--shadow-md);
 }
 
+.katakana-card.not-learned {
+  opacity: 0.5;
+  filter: grayscale(50%);
+}
+
+.katakana-card.not-learned:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+  cursor: default;
+}
+
 .card-header {
   background-color: var(--bg-tertiary);
   padding: 2rem 1rem;
@@ -92,6 +103,24 @@
 .value {
   font-weight: 500;
   font-size: 0.875rem;
+}
+
+.not-learned-message {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.not-learned-message .label {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-muted);
+}
+
+.not-learned-message .value {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 @media (max-width: 768px) {

@@ -8,16 +8,34 @@
   margin-bottom: 2rem;
 }
 
+.hero-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
 .hero-section {
-  background: linear-gradient(135deg, var(--color-apprentice), var(--color-guru));
   padding: 3rem 2rem;
   border-radius: 12px;
   text-align: center;
-  margin-bottom: 2rem;
   box-shadow: var(--shadow-lg);
+  transition: transform 0.2s;
 }
 
-.hero-section.no-reviews {
+.hero-section.lessons.available {
+  background: linear-gradient(135deg, var(--color-apprentice), var(--color-guru));
+}
+
+.hero-section.lessons.empty {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+}
+
+.hero-section.reviews.available {
+  background: linear-gradient(135deg, var(--color-master), var(--color-enlightened));
+}
+
+.hero-section.reviews.empty {
   background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
 }
 
@@ -151,6 +169,10 @@
 }
 
 @media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
   .stats-grid {
     grid-template-columns: 1fr;
   }

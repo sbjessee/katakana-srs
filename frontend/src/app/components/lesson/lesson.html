@@ -100,10 +100,10 @@
       <div *ngIf="!showQuizFeedback" class="answer-section">
         <label for="quiz-answer">Your answer:</label>
         <input
+          #quizAnswerInput
           type="text"
           id="quiz-answer"
           [(ngModel)]="userAnswer"
-          (keypress)="handleQuizKeyPress($event)"
           placeholder="Type romaji..."
           autofocus
           autocomplete="off"
