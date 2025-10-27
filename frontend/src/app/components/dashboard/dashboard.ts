@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
-import { DashboardStats, UpcomingReview, SRS_STAGE_COLORS } from '../../models/katakana.model';
+import { DashboardStats, UpcomingReview, HourlyReview, SRS_STAGE_COLORS } from '../../models/katakana.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,6 +13,8 @@ import { DashboardStats, UpcomingReview, SRS_STAGE_COLORS } from '../../models/k
 export class DashboardComponent implements OnInit {
   stats: DashboardStats | null = null;
   upcomingReviews: UpcomingReview[] = [];
+  hourlyReviews: HourlyReview[] = [];
+  expandedDate: string | null = null;
   isLoading = true;
   stageColors = SRS_STAGE_COLORS;
 
@@ -72,5 +74,29 @@ export class DashboardComponent implements OnInit {
     if (diffDays === -1) return 'Yesterday';
 
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  toggleDayExpansion(date: string) {
+    if (this.expandedDate === date) {
+      // Collapse if clicking the same date
+      this.expandedDate = null;
+      this.hourlyReviews = [];
+    } else {
+      // Expand and load hourly data
+      this.expandedDate = date;
+      this.apiService.getHourlyReviewsForDate(date).subscribe({
+        next: (hourly) => {
+          this.hourlyReviews = hourly;
+        },
+        error: (error) => console.error('Error loading hourly reviews:', error)
+      });
+    }
+  }
+
+  formatHour(hour: number): string {
+    if (hour === 0) return '12 AM';
+    if (hour < 12) return `${hour} AM`;
+    if (hour === 12) return '12 PM';
+    return `${hour - 12} PM`;
   }
 }

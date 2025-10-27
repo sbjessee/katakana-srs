@@ -77,6 +77,11 @@ export interface UpcomingReview {
   count: number;
 }
 
+export interface HourlyReview {
+  hour: number;
+  count: number;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;

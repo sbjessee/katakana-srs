@@ -172,6 +172,23 @@ export class SRSService {
   }
 
   /**
+   * Get hourly breakdown of reviews for a specific date
+   */
+  getHourlyReviewsForDate(date: string): Array<{ hour: number, count: number }> {
+    const query = `
+      SELECT
+        CAST(strftime('%H', next_review_date) AS INTEGER) as hour,
+        COUNT(*) as count
+      FROM reviews
+      WHERE date(next_review_date) = ?
+      GROUP BY hour
+      ORDER BY hour ASC
+    `;
+
+    return this.db.prepare(query).all(date) as Array<{ hour: number, count: number }>;
+  }
+
+  /**
    * Helper: Get stage display name
    */
   private getStageName(stage: SRSStage): string {

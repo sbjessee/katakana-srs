@@ -120,4 +120,33 @@ router.get('/reviews/upcoming', (req: Request, res: Response) => {
   }
 });
 
+/**
+ * GET /api/reviews/upcoming/:date/hourly
+ * Get hourly breakdown of reviews for a specific date
+ */
+router.get('/reviews/upcoming/:date/hourly', (req: Request, res: Response) => {
+  try {
+    const { date } = req.params;
+
+    // Validate date format (YYYY-MM-DD)
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid date format. Expected YYYY-MM-DD'
+      });
+    }
+
+    const hourlyReviews = srsService.getHourlyReviewsForDate(date);
+    res.json({
+      success: true,
+      data: hourlyReviews
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 export default router;

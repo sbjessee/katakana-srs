@@ -80,9 +80,22 @@
     <div class="section" *ngIf="upcomingReviews.length > 0">
       <h3>Upcoming Reviews (Next 7 Days)</h3>
       <div class="upcoming-list">
-        <div *ngFor="let upcoming of upcomingReviews" class="upcoming-item">
-          <span class="upcoming-date">{{ formatDate(upcoming.date) }}</span>
-          <span class="upcoming-count">{{ upcoming.count }} reviews</span>
+        <div *ngFor="let upcoming of upcomingReviews" class="upcoming-day">
+          <div
+            class="upcoming-item"
+            [class.expanded]="expandedDate === upcoming.date"
+            (click)="toggleDayExpansion(upcoming.date)"
+          >
+            <span class="chevron">{{ expandedDate === upcoming.date ? '▼' : '▶' }}</span>
+            <span class="upcoming-date">{{ formatDate(upcoming.date) }}</span>
+            <span class="upcoming-count">{{ upcoming.count }} reviews</span>
+          </div>
+          <div class="hourly-list" *ngIf="expandedDate === upcoming.date && hourlyReviews.length > 0">
+            <div *ngFor="let hourly of hourlyReviews" class="hourly-item">
+              <span class="hourly-time">{{ formatHour(hourly.hour) }}</span>
+              <span class="hourly-count">{{ hourly.count }} {{ hourly.count === 1 ? 'review' : 'reviews' }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

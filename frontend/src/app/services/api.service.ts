@@ -6,6 +6,7 @@ import {
   ReviewWithKatakana,
   DashboardStats,
   UpcomingReview,
+  HourlyReview,
   Review,
   ApiResponse
 } from '../models/katakana.model';
@@ -56,6 +57,14 @@ export class ApiService {
    */
   getUpcomingReviews(): Observable<UpcomingReview[]> {
     return this.http.get<ApiResponse<UpcomingReview[]>>(`${this.apiUrl}/reviews/upcoming`)
+      .pipe(map(response => response.data || []));
+  }
+
+  /**
+   * Get hourly breakdown of reviews for a specific date
+   */
+  getHourlyReviewsForDate(date: string): Observable<HourlyReview[]> {
+    return this.http.get<ApiResponse<HourlyReview[]>>(`${this.apiUrl}/reviews/upcoming/${date}/hourly`)
       .pipe(map(response => response.data || []));
   }
 }
