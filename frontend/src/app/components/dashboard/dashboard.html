@@ -9,16 +9,29 @@
 
   <!-- Dashboard Content -->
   <div *ngIf="!isLoading && stats" class="dashboard-content">
+    <!-- Lessons Available Section -->
+    <div class="hero-section lessons" *ngIf="stats.lessons_available > 0">
+      <h2>{{ stats.lessons_available }} Lessons Available!</h2>
+      <p>Learn new katakana characters</p>
+      <a routerLink="/lessons" class="btn btn-lg btn-primary">Start Lesson</a>
+    </div>
+
     <!-- Reviews Available Section -->
-    <div class="hero-section" *ngIf="stats.reviews_due_now > 0">
+    <div class="hero-section" *ngIf="stats.reviews_due_now > 0 && stats.lessons_available === 0">
       <h2>{{ stats.reviews_due_now }} Reviews Available!</h2>
       <a routerLink="/review" class="btn btn-lg btn-primary">Start Reviews</a>
     </div>
 
-    <div class="hero-section no-reviews" *ngIf="stats.reviews_due_now === 0">
-      <h2>No Reviews Due</h2>
-      <p>Check back later or review all katakana</p>
+    <div class="hero-section no-reviews" *ngIf="stats.reviews_due_now === 0 && stats.lessons_available === 0">
+      <h2>All Caught Up!</h2>
+      <p>No lessons or reviews due right now. Great work!</p>
       <a routerLink="/katakana" class="btn btn-secondary">View All Katakana</a>
+    </div>
+
+    <!-- Secondary Action (if lessons available but also showing reviews) -->
+    <div class="secondary-action" *ngIf="stats.reviews_due_now > 0 && stats.lessons_available > 0">
+      <p>You also have {{ stats.reviews_due_now }} reviews available</p>
+      <a routerLink="/review" class="btn btn-secondary">Start Reviews</a>
     </div>
 
     <!-- Stats Grid -->

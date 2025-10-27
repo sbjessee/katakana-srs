@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { initializeDatabase } from './db/database';
 import apiRoutes from './routes/api.routes';
+import lessonRoutes from './routes/lesson.routes';
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // API routes (must come before static files)
 app.use('/api', apiRoutes);
+app.use('/api/lessons', lessonRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {

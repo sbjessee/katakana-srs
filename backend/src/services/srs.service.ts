@@ -1,8 +1,10 @@
 import { getDatabase } from '../db/database';
 import { Review, ReviewWithKatakana, DashboardStats, SRSStage, SRS_INTERVALS } from '../models/types';
+import { LessonService } from './lesson.service';
 
 export class SRSService {
   private db = getDatabase();
+  private lessonService = new LessonService();
 
   /**
    * Get all reviews that are due for study
@@ -138,12 +140,16 @@ export class SRSService {
       stage_distribution[stageName] = row.count;
     });
 
+    // Get available lessons count
+    const lessons_available = this.lessonService.getAvailableLessonsCount();
+
     return {
       total_items,
       reviews_due_now,
       reviews_due_today,
       accuracy_rate,
-      stage_distribution
+      stage_distribution,
+      lessons_available
     };
   }
 

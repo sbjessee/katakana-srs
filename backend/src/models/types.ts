@@ -65,4 +65,29 @@ export interface DashboardStats {
   reviews_due_today: number;
   accuracy_rate: number;
   stage_distribution: Record<string, number>;
+  lessons_available: number;
+}
+
+export interface LessonBatch {
+  batch_number: number;
+  name: string;
+  description: string;
+  completed: boolean;
+  completed_at: string | null;
+}
+
+export interface LessonItem {
+  id: number;
+  character: string;
+  romaji: string;
+  type: string;
+  user_note: string | null;
+}
+
+export interface UserNote {
+  id: number;
+  katakana_id: number;
+  note: string;
+  created_at: string;
+  updated_at: string;
 }

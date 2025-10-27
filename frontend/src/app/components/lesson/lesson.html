@@ -1,0 +1,153 @@
+<div class="lesson-container">
+  <!-- Loading State -->
+  <div *ngIf="mode === 'loading'" class="loading">
+    <div class="spinner"></div>
+    <p>Loading lesson...</p>
+  </div>
+
+  <!-- No Lessons Available -->
+  <div *ngIf="mode === 'no-lessons'" class="no-lessons">
+    <div class="success-icon">🎉</div>
+    <h2>All Lessons Complete!</h2>
+    <p>You've completed all 26 lesson batches. Amazing work!</p>
+    <a routerLink="/dashboard" class="btn btn-primary">Back to Dashboard</a>
+  </div>
+
+  <!-- Study Mode -->
+  <div *ngIf="mode === 'study' && currentItem && currentBatch" class="study-mode">
+    <div class="lesson-header">
+      <h2>{{ currentBatch.name }}</h2>
+      <p class="description">{{ currentBatch.description }}</p>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="studyProgress"></div>
+    </div>
+    <div class="progress-text">
+      {{ currentItemIndex + 1 }} / {{ lessonItems.length }}
+    </div>
+
+    <!-- Study Card -->
+    <div class="study-card">
+      <div class="character-display">
+        <div class="character">{{ currentItem.character }}</div>
+        <div class="romaji">{{ currentItem.romaji }}</div>
+      </div>
+
+      <div class="note-section">
+        <label for="user-note">Your Mnemonic (optional):</label>
+        <textarea
+          id="user-note"
+          [value]="getUserNote(currentItem.id)"
+          (input)="onNoteChange(currentItem.id, $any($event.target).value)"
+          placeholder="Add a memory trick to help you remember..."
+          rows="3"
+        ></textarea>
+        <p class="hint">Example: "カ looks like a Ka-rate chop!"</p>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="study-navigation">
+      <button
+        class="btn btn-secondary"
+        (click)="previousStudyCard()"
+        [disabled]="currentItemIndex === 0"
+      >
+        ← Previous
+      </button>
+      <button class="btn btn-primary" (click)="nextStudyCard()">
+        {{ currentItemIndex === lessonItems.length - 1 ? 'Start Quiz →' : 'Next →' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Quiz Mode -->
+  <div *ngIf="mode === 'quiz' && currentQuizItem" class="quiz-mode">
+    <div class="lesson-header">
+      <h2>Quiz Time!</h2>
+      <p class="description">Type the romaji for each character</p>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="quizProgress"></div>
+    </div>
+    <div class="progress-text">
+      {{ quizIndex + 1 }} / {{ quizItems.length }}
+    </div>
+
+    <!-- Quiz Card -->
+    <div class="quiz-card" [class.correct]="showQuizFeedback && isQuizCorrect" [class.incorrect]="showQuizFeedback && !isQuizCorrect">
+      <div class="character-display">
+        <div class="character">{{ currentQuizItem.character }}</div>
+      </div>
+
+      <!-- Feedback -->
+      <div *ngIf="showQuizFeedback" class="quiz-feedback" [class.correct]="isQuizCorrect" [class.incorrect]="!isQuizCorrect">
+        <div *ngIf="isQuizCorrect" class="feedback-message">
+          <span class="feedback-icon">✓</span>
+          <span>Correct!</span>
+        </div>
+        <div *ngIf="!isQuizCorrect" class="feedback-message">
+          <span class="feedback-icon">✗</span>
+          <span>The answer is: <strong>{{ currentQuizItem.romaji }}</strong></span>
+        </div>
+      </div>
+
+      <!-- Answer Input -->
+      <div *ngIf="!showQuizFeedback" class="answer-section">
+        <label for="quiz-answer">Your answer:</label>
+        <input
+          type="text"
+          id="quiz-answer"
+          [(ngModel)]="userAnswer"
+          (keypress)="handleQuizKeyPress($event)"
+          placeholder="Type romaji..."
+          autofocus
+          autocomplete="off"
+        />
+        <button class="btn btn-primary" (click)="submitQuizAnswer()" [disabled]="!userAnswer.trim()">
+          Submit
+        </button>
+      </div>
+
+      <!-- Next Button -->
+      <div *ngIf="showQuizFeedback" class="next-section">
+        <button class="btn btn-primary" (click)="nextQuizQuestion()">
+          {{ quizIndex < quizItems.length - 1 ? 'Next' : 'Finish' }}
+        </button>
+        <p class="hint">Press Enter to continue</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Complete Mode -->
+  <div *ngIf="mode === 'complete' && currentBatch" class="complete-mode">
+    <div class="success-icon">🎉</div>
+    <h2>Lesson Complete!</h2>
+    <p class="batch-name">{{ currentBatch.name }}</p>
+
+    <div class="quiz-results">
+      <div class="result-stat">
+        <div class="stat-value">{{ quizScore }}%</div>
+        <div class="stat-label">Accuracy</div>
+      </div>
+      <div class="result-stat">
+        <div class="stat-value">{{ quizCorrectCount }} / {{ quizResults.length }}</div>
+        <div class="stat-label">Correct Answers</div>
+      </div>
+    </div>
+
+    <div class="complete-message">
+      <p>Great job! These items are now in your review queue.</p>
+      <p>You'll see them again based on the spaced repetition schedule.</p>
+    </div>
+
+    <div class="complete-actions">
+      <a routerLink="/dashboard" class="btn btn-primary">Back to Dashboard</a>
+      <a routerLink="/review" class="btn btn-secondary">Start Reviews</a>
+    </div>
+  </div>
+</div>
