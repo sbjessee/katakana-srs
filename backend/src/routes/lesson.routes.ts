@@ -82,6 +82,7 @@ router.get('/:batchNumber/items', (req: Request, res: Response) => {
 /**
  * POST /api/lessons/:batchNumber/complete
  * Mark a lesson batch as completed
+ * Body: { quizResults?: Array<{ katakanaId: number, correct: boolean }> }
  */
 router.post('/:batchNumber/complete', (req: Request, res: Response) => {
   try {
@@ -94,7 +95,8 @@ router.post('/:batchNumber/complete', (req: Request, res: Response) => {
       });
     }
 
-    lessonService.completeLesson(batchNumber);
+    const { quizResults } = req.body;
+    lessonService.completeLesson(batchNumber, quizResults);
     res.json({
       success: true,
       message: 'Lesson completed successfully'

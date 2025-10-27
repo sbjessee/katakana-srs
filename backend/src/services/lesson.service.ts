@@ -57,8 +57,9 @@ export class LessonService {
    * Complete a lesson batch
    * - Marks the batch as completed
    * - Creates reviews for all katakana in the batch (if not already created)
+   * - Quiz results determine initial SRS stage (correct on first try = stage 1, otherwise stage 0)
    */
-  completeLesson(batchNumber: number): void {
+  completeLesson(batchNumber: number, quizResults?: Array<{ katakanaId: number, correct: boolean }>): void {
     const updateBatch = this.db.prepare(`
       UPDATE lesson_batches
       SET completed = 1, completed_at = datetime('now')
@@ -70,10 +71,25 @@ export class LessonService {
       SELECT id FROM katakana WHERE lesson_batch_number = ?
     `);
 
+    // Create a map of quiz results for quick lookup
+    const quizResultsMap = new Map<number, boolean>();
+    if (quizResults) {
+      for (const result of quizResults) {
+        quizResultsMap.set(result.katakanaId, result.correct);
+      }
+    }
+
     // Insert reviews for katakana that don't have reviews yet
+    // Stage 0 (APPRENTICE_1) = 4 hours, Stage 1 (APPRENTICE_2) = 8 hours
     const insertReview = this.db.prepare(`
-      INSERT OR IGNORE INTO reviews (katakana_id, srs_stage, next_review_date)
-      VALUES (?, 0, datetime('now'))
+      INSERT OR IGNORE INTO reviews (
+        katakana_id,
+        srs_stage,
+        next_review_date,
+        correct_count,
+        incorrect_count
+      )
+      VALUES (?, ?, datetime('now', ? || ' hours'), ?, ?)
     `);
 
     const transaction = this.db.transaction(() => {
@@ -83,7 +99,13 @@ export class LessonService {
       // Create reviews for all katakana in this batch
       const katakanaIds = getKatakana.all(batchNumber) as Array<{ id: number }>;
       for (const { id } of katakanaIds) {
-        insertReview.run(id);
+        const correctOnFirstTry = quizResultsMap.get(id) ?? false;
+        const initialStage = correctOnFirstTry ? 1 : 0; // APPRENTICE_2 or APPRENTICE_1
+        const intervalHours = correctOnFirstTry ? 8 : 4;
+        const correctCount = correctOnFirstTry ? 1 : 0;
+        const incorrectCount = correctOnFirstTry ? 0 : 1;
+
+        insertReview.run(id, initialStage, `+${intervalHours}`, correctCount, incorrectCount);
       }
     });
 

@@ -37,10 +37,10 @@ export class LessonService {
   }
 
   /**
-   * Complete a lesson batch
+   * Complete a lesson batch with quiz results
    */
-  completeLesson(batchNumber: number): Observable<void> {
-    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/${batchNumber}/complete`, {})
+  completeLesson(batchNumber: number, quizResults?: { katakanaId: number, correct: boolean }[]): Observable<void> {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/${batchNumber}/complete`, { quizResults })
       .pipe(map(() => undefined));
   }
 

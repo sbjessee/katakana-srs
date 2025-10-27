@@ -29,6 +29,8 @@ export class LessonComponent implements OnInit {
   showQuizFeedback = false;
   isQuizCorrect = false;
   quizResults: boolean[] = [];
+  firstAttemptResults: Map<number, boolean> = new Map(); // Track first attempt for each item
+  isTransitioning = false;
 
   constructor(private lessonService: LessonService) {}
 
@@ -115,6 +117,7 @@ export class LessonComponent implements OnInit {
     this.quizItems = [...this.lessonItems].sort(() => Math.random() - 0.5);
     this.quizIndex = 0;
     this.quizResults = [];
+    this.firstAttemptResults.clear();
     this.userAnswer = '';
     this.showQuizFeedback = false;
     this.mode = 'quiz';
@@ -137,10 +140,23 @@ export class LessonComponent implements OnInit {
     this.isQuizCorrect = normalizedAnswer === correctAnswer;
     this.showQuizFeedback = true;
     this.quizResults.push(this.isQuizCorrect);
+
+    // Track first attempt result (only if this item hasn't been attempted before)
+    if (!this.firstAttemptResults.has(this.currentQuizItem.id)) {
+      this.firstAttemptResults.set(this.currentQuizItem.id, this.isQuizCorrect);
+    }
+
+    // If incorrect, add this item back to the end of the queue
+    if (!this.isQuizCorrect) {
+      this.quizItems.push(this.currentQuizItem);
+    }
   }
 
   nextQuizQuestion() {
+    if (this.isTransitioning) return;
+
     if (this.quizIndex < this.quizItems.length - 1) {
+      this.isTransitioning = true;
       this.quizIndex++;
       this.userAnswer = '';
       this.showQuizFeedback = false;
@@ -148,7 +164,8 @@ export class LessonComponent implements OnInit {
       // Focus the input field after the view updates
       setTimeout(() => {
         this.quizAnswerInput?.nativeElement.focus();
-      }, 0);
+        this.isTransitioning = false;
+      }, 10);
     } else {
       // Quiz complete
       this.completeLesson();
@@ -158,7 +175,13 @@ export class LessonComponent implements OnInit {
   completeLesson() {
     if (!this.currentBatch) return;
 
-    this.lessonService.completeLesson(this.currentBatch.batch_number).subscribe({
+    // Convert first attempt results to format expected by backend
+    const quizResults = Array.from(this.firstAttemptResults.entries()).map(([katakanaId, correct]) => ({
+      katakanaId,
+      correct
+    }));
+
+    this.lessonService.completeLesson(this.currentBatch.batch_number, quizResults).subscribe({
       next: () => {
         this.mode = 'complete';
       },
@@ -179,8 +202,8 @@ export class LessonComponent implements OnInit {
 
   @HostListener('window:keyup', ['$event'])
   handleKeyPress(event: KeyboardEvent) {
-    // Don't handle keyboard events when loading, no lessons, or complete
-    if (this.mode === 'loading' || this.mode === 'no-lessons' || this.mode === 'complete') {
+    // Don't handle keyboard events when loading, no lessons, complete, or transitioning
+    if (this.mode === 'loading' || this.mode === 'no-lessons' || this.mode === 'complete' || this.isTransitioning) {
       return;
     }
 

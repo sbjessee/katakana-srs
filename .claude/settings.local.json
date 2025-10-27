@@ -10,7 +10,8 @@
       "Bash(powershell -ExecutionPolicy Bypass -File ../test-api.ps1)",
       "Bash(taskkill:*)",
       "Bash(mkdir:*)",
-      "Bash(npx ng generate:*)"
+      "Bash(npx ng generate:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

@@ -21,6 +21,7 @@ export class ReviewComponent implements OnInit {
   isCorrect = false;
   isComplete = false;
   isLoading = true;
+  isTransitioning = false;
 
   constructor(private apiService: ApiService) {}
 
@@ -66,6 +67,11 @@ export class ReviewComponent implements OnInit {
     this.isCorrect = normalizedAnswer === correctAnswer;
     this.showFeedback = true;
 
+    // If incorrect, add this item back to the end of the queue
+    if (!this.isCorrect) {
+      this.reviews.push(this.currentReview);
+    }
+
     // Submit to backend
     this.apiService.submitAnswer(this.currentReview.id, this.isCorrect).subscribe({
       error: (error) => console.error('Error submitting answer:', error)
@@ -73,6 +79,9 @@ export class ReviewComponent implements OnInit {
   }
 
   nextReview() {
+    if (this.isTransitioning) return;
+
+    this.isTransitioning = true;
     this.currentIndex++;
     this.userAnswer = '';
     this.showFeedback = false;
@@ -80,18 +89,20 @@ export class ReviewComponent implements OnInit {
 
     if (this.currentIndex >= this.reviews.length) {
       this.isComplete = true;
+      this.isTransitioning = false;
     } else {
       // Focus the input field after the view updates
       setTimeout(() => {
         this.answerInput?.nativeElement.focus();
-      }, 0);
+        this.isTransitioning = false;
+      }, 10);
     }
   }
 
   @HostListener('window:keyup', ['$event'])
   handleKeyPress(event: KeyboardEvent) {
-    // Only handle if we're in an active review session (not loading or complete)
-    if (this.isLoading || this.isComplete || !this.currentReview) {
+    // Only handle if we're in an active review session (not loading, complete, or transitioning)
+    if (this.isLoading || this.isComplete || !this.currentReview || this.isTransitioning) {
       return;
     }
 
