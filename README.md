@@ -15,9 +15,17 @@ A WaniKani-inspired web application for learning katakana using a spaced repetit
 ## Architecture
 
 - **Frontend**: Angular 19 with TypeScript, SCSS
-- **Backend**: Express.js with TypeScript
+- **Backend**: Express.js with TypeScript (serves both API and static files)
 - **Database**: SQLite (better-sqlite3)
-- **Deployment**: Docker & Docker Compose
+- **Deployment**: Single unified Docker container
+
+### Unified Container Design
+
+The application runs as a **single container** where:
+- Express.js serves the built Angular app as static files
+- The same Express instance handles `/api/*` routes for the backend
+- No need for separate web server (Nginx) or multiple containers
+- Simpler deployment and configuration
 
 ## Quick Start with Docker
 
@@ -32,13 +40,15 @@ A WaniKani-inspired web application for learning katakana using a spaced repetit
 git clone <your-repo-url>
 cd katakana
 
-# Start the application
+# Start the application (single container)
 docker-compose up -d
 
 # The app will be available at:
-# Frontend: http://localhost:8080
-# Backend API: http://localhost:3000
+# Application: http://localhost:3000
+# API Endpoints: http://localhost:3000/api
 ```
+
+The frontend and backend run in a **single unified container** - Express serves both the API and the Angular static files.
 
 ### Stop the Application
 
@@ -68,8 +78,10 @@ npm run dev  # Starts on port 3000
 ```bash
 cd frontend
 npm install
-npm start  # Starts on port 4200
+npm start  # Starts on port 4200 with API proxy to :3000
 ```
+
+The frontend uses a proxy configuration ([proxy.conf.json](frontend/proxy.conf.json)) to forward `/api/*` requests to the backend during development. In production, both are served from the same Express server on port 3000.
 
 ## SRS Algorithm
 

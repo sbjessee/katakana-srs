@@ -1,9 +1,0 @@
-node_modules
-dist
-*.log
-.git
-.gitignore
-README.md
-data/*.db
-data/*.db-shm
-data/*.db-wal

@@ -14,7 +14,8 @@ import {
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:3000/api';
+  // Use relative URL - works for both dev (proxy) and production (same server)
+  private apiUrl = '/api';
 
   constructor(private http: HttpClient) {}
 
