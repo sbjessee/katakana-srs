@@ -59,21 +59,23 @@ export class DashboardComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
+    // Parse date string as local date to avoid timezone issues
+    // Backend sends dates as YYYY-MM-DD, which new Date() interprets as UTC
+    const [year, month, day] = dateString.split('-').map(Number);
+    const reviewDate = new Date(year, month - 1, day); // month is 0-indexed
+    reviewDate.setHours(0, 0, 0, 0);
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const reviewDate = new Date(date);
-    reviewDate.setHours(0, 0, 0, 0);
-
     const diffTime = reviewDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Tomorrow';
     if (diffDays === -1) return 'Yesterday';
 
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return reviewDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
   toggleDayExpansion(date: string) {
