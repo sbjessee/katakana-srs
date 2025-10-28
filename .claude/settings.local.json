@@ -11,7 +11,8 @@
       "Bash(taskkill:*)",
       "Bash(mkdir:*)",
       "Bash(npx ng generate:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(dir \"c:\\Users\\skyle\\source\\repos\\katakana\"\" | findstr /i \"gitignore README \")"
     ],
     "deny": [],
     "ask": []
