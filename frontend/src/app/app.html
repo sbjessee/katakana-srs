@@ -3,10 +3,15 @@
     <div class="nav-brand">
       <h1>カタカナ Learning</h1>
     </div>
-    <div class="nav-links">
-      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-      <a routerLink="/review" routerLinkActive="active">Review</a>
-      <a routerLink="/katakana" routerLinkActive="active">All Katakana</a>
+    <button class="hamburger" (click)="toggleMobileMenu()" [class.open]="mobileMenuOpen" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" [class.mobile-open]="mobileMenuOpen">
+      <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMobileMenu()">Dashboard</a>
+      <a routerLink="/review" routerLinkActive="active" (click)="closeMobileMenu()">Review</a>
+      <a routerLink="/katakana" routerLinkActive="active" (click)="closeMobileMenu()">All Katakana</a>
     </div>
   </nav>
 

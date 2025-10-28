@@ -76,6 +76,12 @@ export class ReviewComponent implements OnInit {
     this.apiService.submitAnswer(this.currentReview.id, this.isCorrect).subscribe({
       error: (error) => console.error('Error submitting answer:', error)
     });
+
+    // Keep the input focused and select text so keyboard doesn't disappear on mobile
+    setTimeout(() => {
+      this.answerInput?.nativeElement.focus();
+      this.answerInput?.nativeElement.select();
+    }, 0);
   }
 
   nextReview() {

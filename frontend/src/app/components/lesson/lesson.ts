@@ -150,6 +150,12 @@ export class LessonComponent implements OnInit {
     if (!this.isQuizCorrect) {
       this.quizItems.push(this.currentQuizItem);
     }
+
+    // Keep the input focused and select text so keyboard doesn't disappear on mobile
+    setTimeout(() => {
+      this.quizAnswerInput?.nativeElement.focus();
+      this.quizAnswerInput?.nativeElement.select();
+    }, 0);
   }
 
   nextQuizQuestion() {

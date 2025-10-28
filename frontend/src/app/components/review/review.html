@@ -29,41 +29,35 @@
       <div class="character">{{ currentReview.character }}</div>
     </div>
 
-    <!-- Feedback Message -->
-    <div *ngIf="showFeedback" class="feedback" [class.correct]="isCorrect" [class.incorrect]="!isCorrect">
-      <div *ngIf="isCorrect" class="feedback-message">
-        <span class="feedback-icon">✓</span>
-        <span>Correct!</span>
-      </div>
-      <div *ngIf="!isCorrect" class="feedback-message">
-        <span class="feedback-icon">✗</span>
-        <span>Incorrect. The answer is: <strong>{{ currentReview.romaji }}</strong></span>
-      </div>
-    </div>
-
     <!-- Answer Input -->
-    <div class="answer-section" *ngIf="!showFeedback">
+    <div class="answer-section">
       <label for="answer">Enter the romaji:</label>
       <input
         #answerInput
         type="text"
         id="answer"
         [(ngModel)]="userAnswer"
+        [class.correct]="showFeedback && isCorrect"
+        [class.incorrect]="showFeedback && !isCorrect"
         placeholder="Type your answer..."
         autofocus
         autocomplete="off"
       />
-      <button class="btn btn-primary" (click)="submitAnswer()" [disabled]="!userAnswer.trim()">
+      <button
+        class="btn btn-primary"
+        (click)="submitAnswer()"
+        [disabled]="!userAnswer.trim()"
+        *ngIf="!showFeedback"
+      >
         Submit
       </button>
-    </div>
-
-    <!-- Next Button (shown after feedback) -->
-    <div class="next-section" *ngIf="showFeedback">
-      <button class="btn btn-primary" (click)="nextReview()">
-        {{ currentIndex < reviews.length - 1 ? 'Next' : 'Finish' }}
-      </button>
-      <p class="hint">Press Enter to continue</p>
+      <!-- Feedback below input -->
+      <div *ngIf="showFeedback && !isCorrect" class="input-feedback-text">
+        Incorrect. The answer is: <strong>{{ currentReview.romaji }}</strong>
+      </div>
+      <div *ngIf="showFeedback" class="hint">
+        Press Enter to continue
+      </div>
     </div>
   </div>
 </div>

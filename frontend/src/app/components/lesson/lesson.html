@@ -84,41 +84,35 @@
         <div class="character">{{ currentQuizItem.character }}</div>
       </div>
 
-      <!-- Feedback -->
-      <div *ngIf="showQuizFeedback" class="quiz-feedback" [class.correct]="isQuizCorrect" [class.incorrect]="!isQuizCorrect">
-        <div *ngIf="isQuizCorrect" class="feedback-message">
-          <span class="feedback-icon">✓</span>
-          <span>Correct!</span>
-        </div>
-        <div *ngIf="!isQuizCorrect" class="feedback-message">
-          <span class="feedback-icon">✗</span>
-          <span>The answer is: <strong>{{ currentQuizItem.romaji }}</strong></span>
-        </div>
-      </div>
-
       <!-- Answer Input -->
-      <div *ngIf="!showQuizFeedback" class="answer-section">
+      <div class="answer-section">
         <label for="quiz-answer">Your answer:</label>
         <input
           #quizAnswerInput
           type="text"
           id="quiz-answer"
           [(ngModel)]="userAnswer"
+          [class.correct]="showQuizFeedback && isQuizCorrect"
+          [class.incorrect]="showQuizFeedback && !isQuizCorrect"
           placeholder="Type romaji..."
           autofocus
           autocomplete="off"
         />
-        <button class="btn btn-primary" (click)="submitQuizAnswer()" [disabled]="!userAnswer.trim()">
+        <button
+          class="btn btn-primary"
+          (click)="submitQuizAnswer()"
+          [disabled]="!userAnswer.trim()"
+          *ngIf="!showQuizFeedback"
+        >
           Submit
         </button>
-      </div>
-
-      <!-- Next Button -->
-      <div *ngIf="showQuizFeedback" class="next-section">
-        <button class="btn btn-primary" (click)="nextQuizQuestion()">
-          {{ quizIndex < quizItems.length - 1 ? 'Next' : 'Finish' }}
-        </button>
-        <p class="hint">Press Enter to continue</p>
+        <!-- Feedback below input -->
+        <div *ngIf="showQuizFeedback && !isQuizCorrect" class="input-feedback-text">
+          The answer is: <strong>{{ currentQuizItem.romaji }}</strong>
+        </div>
+        <div *ngIf="showQuizFeedback" class="hint">
+          Press Enter to continue
+        </div>
       </div>
     </div>
   </div>
