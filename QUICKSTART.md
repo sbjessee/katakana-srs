@@ -9,7 +9,7 @@ The simplest way to run the application. Everything in one container.
 docker-compose up -d
 
 # Access the app
-open http://localhost:3000
+open http://localhost:3975
 
 # View logs
 docker-compose logs -f
@@ -20,7 +20,7 @@ docker-compose down
 
 **What you get:**
 - ✅ Frontend + Backend in one container
-- ✅ Single port (3000)
+- ✅ Single port (3975)
 - ✅ Persistent SQLite database
 - ✅ No configuration needed
 
@@ -34,7 +34,7 @@ cd backend
 npm install
 npm run dev
 ```
-Backend runs on http://localhost:3000
+Backend runs on http://localhost:3975
 
 ### Terminal 2 - Frontend
 ```bash
@@ -52,7 +52,7 @@ Frontend runs on http://localhost:4200 (with proxy to backend)
 ## First Time Setup
 
 1. **Start the application** (using either option above)
-2. **Open your browser** to http://localhost:3000 (Docker) or http://localhost:4200 (Dev)
+2. **Open your browser** to http://localhost:3975 (Docker) or http://localhost:4200 (Dev)
 3. **You'll see 104 reviews available** - all katakana characters ready to learn!
 4. **Click "Start Reviews"** to begin learning
 
@@ -60,7 +60,7 @@ Frontend runs on http://localhost:4200 (with proxy to backend)
 
 ```
 ┌─────────────────────────────────────┐
-│   Docker Container (Port 3000)      │
+│   Docker Container (Port 3975)      │
 │                                     │
 │  ┌────────────────────────────┐   │
 │  │   Express.js Server        │   │

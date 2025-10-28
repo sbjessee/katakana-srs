@@ -9,13 +9,13 @@ Start-Sleep -Seconds 5
 
 # Test the API
 Write-Host "Testing /api/health:"
-curl http://localhost:3000/api/health
+curl http://localhost:3975/api/health
 
 Write-Host "`nTesting /api/test:"
-curl http://localhost:3000/api/test
+curl http://localhost:3975/api/test
 
 Write-Host "`nTesting /api/stats:"
-curl http://localhost:3000/api/stats
+curl http://localhost:3975/api/stats
 
 # Stop the job
 Stop-Job $job

@@ -33,7 +33,7 @@ COPY --from=frontend-builder /app/frontend/dist/frontend/browser ./public
 RUN mkdir -p /app/data
 
 # Expose single port
-EXPOSE 3000
+EXPOSE 3975
 
 # Start the unified server
 CMD ["node", "dist/index.js"]

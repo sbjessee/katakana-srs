@@ -6,7 +6,7 @@ import apiRoutes from './routes/api.routes';
 import lessonRoutes from './routes/lesson.routes';
 
 const app: Express = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3975;
 
 // Middleware
 app.use(cors());
