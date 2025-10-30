@@ -98,6 +98,11 @@ export class LessonComponent implements OnInit {
   }
 
   nextStudyCard() {
+    // Remove focus from any active element (like notes textarea) to prevent enter key from adding blank lines
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
     if (this.currentItemIndex < this.lessonItems.length - 1) {
       this.currentItemIndex++;
     } else {
@@ -156,6 +161,13 @@ export class LessonComponent implements OnInit {
       this.quizAnswerInput?.nativeElement.focus();
       this.quizAnswerInput?.nativeElement.select();
     }, 0);
+  }
+
+  onQuizInputClick() {
+    // If feedback is showing, advance to next question (like WaniKani)
+    if (this.showQuizFeedback) {
+      this.nextQuizQuestion();
+    }
   }
 
   nextQuizQuestion() {

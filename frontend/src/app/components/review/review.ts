@@ -22,6 +22,7 @@ export class ReviewComponent implements OnInit {
   isComplete = false;
   isLoading = true;
   isTransitioning = false;
+  userNotes: Map<number, string> = new Map();
 
   constructor(private apiService: ApiService) {}
 
@@ -34,6 +35,12 @@ export class ReviewComponent implements OnInit {
     this.apiService.getDueReviews().subscribe({
       next: (reviews) => {
         this.reviews = reviews;
+        // Initialize notes map
+        reviews.forEach(review => {
+          if (review.user_note) {
+            this.userNotes.set(review.katakana_id, review.user_note);
+          }
+        });
         this.isLoading = false;
         if (reviews.length === 0) {
           this.isComplete = true;
@@ -57,6 +64,27 @@ export class ReviewComponent implements OnInit {
 
   get remaining(): number {
     return this.reviews.length - this.currentIndex;
+  }
+
+  getUserNote(katakanaId: number): string {
+    return this.userNotes.get(katakanaId) || '';
+  }
+
+  onNoteChange(katakanaId: number, note: string) {
+    this.userNotes.set(katakanaId, note);
+    // Auto-save note
+    if (note.trim()) {
+      this.apiService.saveUserNote(katakanaId, note).subscribe({
+        error: (error) => console.error('Error saving note:', error)
+      });
+    }
+  }
+
+  onInputClick() {
+    // If feedback is showing, advance to next review (like WaniKani)
+    if (this.showFeedback) {
+      this.nextReview();
+    }
   }
 
   submitAnswer() {

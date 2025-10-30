@@ -61,6 +61,7 @@ export interface ReviewWithKatakana extends Review {
   character: string;
   romaji: string;
   type: string;
+  user_note: string | null;
 }
 
 export interface DashboardStats {

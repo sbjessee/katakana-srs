@@ -48,14 +48,14 @@
 .character-display {
   background-color: var(--bg-secondary);
   border-radius: 12px;
-  padding: 4rem 2rem;
-  margin: 2rem 0;
+  padding: 3rem 2rem;
+  margin: 1.5rem 0;
   text-align: center;
   box-shadow: var(--shadow-lg);
 }
 
 .character {
-  font-size: 8rem;
+  font-size: 6rem;
   font-weight: bold;
   line-height: 1;
   margin-bottom: 1rem;
@@ -158,6 +158,10 @@
   background-color: rgba(255, 0, 102, 0.15);
   border: 3px solid var(--color-incorrect);
   color: var(--color-incorrect);
+}
+
+.answer-section input.clickable {
+  cursor: pointer;
 }
 
 .input-feedback-text {
@@ -295,7 +299,7 @@
 // Responsive Design
 @media (max-width: 768px) {
   .character {
-    font-size: 5rem;
+    font-size: 4rem;
   }
 
   .romaji {
@@ -303,11 +307,24 @@
   }
 
   .character-display {
-    padding: 3rem 1rem;
+    padding: 2rem 1rem;
+    margin: 1rem 0;
   }
 
   .lesson-title {
     font-size: 1.5rem;
+  }
+
+  .progress-text {
+    margin-bottom: 1.5rem;
+  }
+
+  .note-section {
+    margin: 1.5rem 0;
+  }
+
+  .answer-section {
+    margin: 1rem 0;
   }
 
   .navigation,

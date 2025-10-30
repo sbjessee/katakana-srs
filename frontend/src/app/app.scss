@@ -16,6 +16,16 @@
   z-index: 1000;
 }
 
+.nav-brand a {
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
 .nav-brand h1 {
   font-size: 1.5rem;
   margin: 0;

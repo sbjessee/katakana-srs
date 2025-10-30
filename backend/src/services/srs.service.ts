@@ -14,9 +14,11 @@ export class SRSService {
       SELECT
         r.id, r.katakana_id, r.srs_stage, r.next_review_date,
         r.correct_count, r.incorrect_count, r.last_reviewed, r.created_at,
-        k.character, k.romaji, k.type
+        k.character, k.romaji, k.type,
+        un.note as user_note
       FROM reviews r
       JOIN katakana k ON r.katakana_id = k.id
+      LEFT JOIN user_notes un ON k.id = un.katakana_id
       WHERE datetime(r.next_review_date) <= datetime('now')
       ORDER BY r.next_review_date ASC
     `;

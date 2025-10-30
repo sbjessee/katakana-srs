@@ -1,7 +1,9 @@
 <div class="app-container">
   <nav class="navbar">
     <div class="nav-brand">
-      <h1>カタカナ Learning</h1>
+      <a routerLink="/dashboard" (click)="closeMobileMenu()">
+        <h1>カタカナ Learning</h1>
+      </a>
     </div>
     <button class="hamburger" (click)="toggleMobileMenu()" [class.open]="mobileMenuOpen" aria-label="Toggle menu">
       <span></span>

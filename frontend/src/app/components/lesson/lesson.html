@@ -94,7 +94,9 @@
           [(ngModel)]="userAnswer"
           [class.correct]="showQuizFeedback && isQuizCorrect"
           [class.incorrect]="showQuizFeedback && !isQuizCorrect"
+          [class.clickable]="showQuizFeedback"
           placeholder="Type romaji..."
+          (click)="onQuizInputClick()"
           autofocus
           autocomplete="off"
         />
@@ -111,7 +113,7 @@
           The answer is: <strong>{{ currentQuizItem.romaji }}</strong>
         </div>
         <div *ngIf="showQuizFeedback" class="hint">
-          Press Enter to continue
+          Press Enter or click to continue
         </div>
       </div>
     </div>

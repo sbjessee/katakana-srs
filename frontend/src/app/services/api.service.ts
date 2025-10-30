@@ -8,7 +8,8 @@ import {
   UpcomingReview,
   HourlyReview,
   Review,
-  ApiResponse
+  ApiResponse,
+  UserNote
 } from '../models/katakana.model';
 
 @Injectable({
@@ -66,5 +67,13 @@ export class ApiService {
   getHourlyReviewsForDate(date: string): Observable<HourlyReview[]> {
     return this.http.get<ApiResponse<HourlyReview[]>>(`${this.apiUrl}/reviews/upcoming/${date}/hourly`)
       .pipe(map(response => response.data || []));
+  }
+
+  /**
+   * Save or update a user note for a katakana character
+   */
+  saveUserNote(katakanaId: number, note: string): Observable<UserNote> {
+    return this.http.post<ApiResponse<UserNote>>(`${this.apiUrl}/notes`, { katakanaId, note })
+      .pipe(map(response => response.data!));
   }
 }

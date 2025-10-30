@@ -39,7 +39,9 @@
         [(ngModel)]="userAnswer"
         [class.correct]="showFeedback && isCorrect"
         [class.incorrect]="showFeedback && !isCorrect"
+        [class.clickable]="showFeedback"
         placeholder="Type your answer..."
+        (click)="onInputClick()"
         autofocus
         autocomplete="off"
       />
@@ -56,7 +58,19 @@
         Incorrect. The answer is: <strong>{{ currentReview.romaji }}</strong>
       </div>
       <div *ngIf="showFeedback" class="hint">
-        Press Enter to continue
+        Press Enter or click to continue
+      </div>
+
+      <!-- Notes section (shown after feedback) -->
+      <div *ngIf="showFeedback" class="note-section">
+        <label for="review-note">Your Mnemonic:</label>
+        <textarea
+          id="review-note"
+          [value]="getUserNote(currentReview.katakana_id)"
+          (input)="onNoteChange(currentReview.katakana_id, $any($event.target).value)"
+          placeholder="Add a memory trick to help you remember..."
+          rows="3"
+        ></textarea>
       </div>
     </div>
   </div>
