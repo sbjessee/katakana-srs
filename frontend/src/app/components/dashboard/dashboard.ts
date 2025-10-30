@@ -42,10 +42,52 @@ export class DashboardComponent implements OnInit {
     // Load upcoming reviews
     this.apiService.getUpcomingReviews().subscribe({
       next: (upcoming) => {
-        this.upcomingReviews = upcoming;
+        this.upcomingReviews = this.generateSevenDayView(upcoming);
       },
       error: (error) => console.error('Error loading upcoming reviews:', error)
     });
+  }
+
+  private generateSevenDayView(reviewData: UpcomingReview[]): UpcomingReview[] {
+    const result: UpcomingReview[] = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Create a map of existing review data by date
+    const reviewMap = new Map<string, UpcomingReview>();
+    reviewData.forEach(review => {
+      reviewMap.set(review.date, review);
+    });
+
+    // Generate 7 days starting from today
+    let cumulativeCount = 0;
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(date.getDate() + i);
+      const dateString = this.formatDateToYMD(date);
+
+      const existingReview = reviewMap.get(dateString);
+      if (existingReview) {
+        cumulativeCount = existingReview.count; // Backend provides cumulative count
+        result.push(existingReview);
+      } else {
+        // Add placeholder for days with no reviews (cumulative count stays same)
+        result.push({
+          date: dateString,
+          count: cumulativeCount,
+          new_count: 0
+        });
+      }
+    }
+
+    return result;
+  }
+
+  private formatDateToYMD(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   getStageEntries(): Array<{name: string, count: number, color: string}> {
@@ -118,27 +160,20 @@ export class DashboardComponent implements OnInit {
   formatDayName(dateString: string): string {
     const [year, month, day] = dateString.split('-').map(Number);
     const reviewDate = new Date(year, month - 1, day);
-    reviewDate.setHours(0, 0, 0, 0);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const diffTime = reviewDate.getTime() - today.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Tomorrow';
-
-    // Return day name abbreviation (Mon, Tue, Wed, etc.)
+    // Always return day name abbreviation (Mon, Tue, Wed, etc.)
     return reviewDate.toLocaleDateString('en-US', { weekday: 'short' });
   }
 
   getMaxNewCount(): number {
-    return Math.max(...this.upcomingReviews.map(r => r.new_count), 1);
+    const maxCount = Math.max(...this.upcomingReviews.map(r => r.new_count));
+    return maxCount > 0 ? maxCount : 1; // Ensure minimum of 1 to avoid division by zero
   }
 
   getMaxHourlyNewCount(): number {
-    return Math.max(...this.hourlyReviews.map(r => r.new_count), 1);
+    if (this.hourlyReviews.length === 0) return 1;
+    const maxCount = Math.max(...this.hourlyReviews.map(r => r.new_count));
+    return maxCount > 0 ? maxCount : 1; // Ensure minimum of 1 to avoid division by zero
   }
 
   getExpandedDayNewCount(): number {
@@ -151,5 +186,20 @@ export class DashboardComponent implements OnInit {
     if (!this.expandedDate) return 0;
     const review = this.upcomingReviews.find(r => r.date === this.expandedDate);
     return review?.count || 0;
+  }
+
+  getStageLabelShort(stageName: string): string {
+    // Convert stage names to Roman numerals matching WaniKani
+    const stageMap: Record<string, string> = {
+      'Apprentice I': 'I',
+      'Apprentice II': 'II',
+      'Apprentice III': 'III',
+      'Apprentice IV': 'IV',
+      'Guru I': 'V',
+      'Guru II': 'VI',
+      'Master': 'VII',
+      'Enlightened': 'VIII'
+    };
+    return stageMap[stageName] || stageName;
   }
 }

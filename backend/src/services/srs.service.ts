@@ -1,5 +1,5 @@
 import { getDatabase } from '../db/database';
-import { Review, ReviewWithKatakana, DashboardStats, SRSStage, SRS_INTERVALS } from '../models/types';
+import { Review, ReviewWithKatakana, DashboardStats, SRSStage, SRS_INTERVALS, SRS_STAGE_NAMES } from '../models/types';
 import { LessonService } from './lesson.service';
 
 export class SRSService {
@@ -129,16 +129,21 @@ export class SRSService {
       ? Math.round(((accuracyResult.correct || 0) / totalAnswers) * 100)
       : 0;
 
-    // Stage distribution
+    // Stage distribution - initialize all 8 stages with 0
+    const stage_distribution: Record<string, number> = {};
+    Object.entries(SRS_STAGE_NAMES).forEach(([stage, name]) => {
+      stage_distribution[name] = 0;
+    });
+
+    // Fill in actual counts
     const stageDistribution = this.db.prepare(`
       SELECT srs_stage, COUNT(*) as count
       FROM reviews
       GROUP BY srs_stage
     `).all() as Array<{ srs_stage: number, count: number }>;
 
-    const stage_distribution: Record<string, number> = {};
     stageDistribution.forEach(row => {
-      const stageName = this.getStageName(row.srs_stage as SRSStage);
+      const stageName = SRS_STAGE_NAMES[row.srs_stage as SRSStage];
       stage_distribution[stageName] = row.count;
     });
 
@@ -218,13 +223,4 @@ export class SRSService {
     });
   }
 
-  /**
-   * Helper: Get stage display name
-   */
-  private getStageName(stage: SRSStage): string {
-    if (stage <= SRSStage.APPRENTICE_4) return 'Apprentice';
-    if (stage <= SRSStage.GURU_2) return 'Guru';
-    if (stage === SRSStage.MASTER) return 'Master';
-    return 'Enlightened';
-  }
 }

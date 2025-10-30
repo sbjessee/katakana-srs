@@ -32,10 +32,14 @@ export const getSRSGroupName = (stage: SRSStage): string => {
 
 // SRS stage colors for UI (WaniKani-inspired)
 export const SRS_STAGE_COLORS: Record<string, string> = {
-  'Apprentice': '#dd0093',  // Pink
-  'Guru': '#882d9e',        // Purple
-  'Master': '#294ddb',      // Blue
-  'Enlightened': '#0093dd', // Light blue
+  'Apprentice I': '#dd0093',    // Pink
+  'Apprentice II': '#dd0093',   // Pink
+  'Apprentice III': '#dd0093',  // Pink
+  'Apprentice IV': '#dd0093',   // Pink
+  'Guru I': '#882d9e',          // Purple
+  'Guru II': '#882d9e',         // Purple
+  'Master': '#294ddb',          // Blue
+  'Enlightened': '#0093dd',     // Light blue
 };
 
 export interface Katakana {

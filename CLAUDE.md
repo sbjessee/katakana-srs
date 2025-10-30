@@ -135,3 +135,4 @@ Each lesson includes study mode, quiz, and re-queuing of incorrect answers.
 - SQLite database persists in Docker volume (`katakana-data`)
 - Port 3975 for both development backend and Docker deployment
 - Most code was AI-generated using Claude Code
+- always run "docker compose up -d --build" when finishing with a new feature/request

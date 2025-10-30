@@ -56,28 +56,29 @@
       </div>
     </div>
 
-    <!-- SRS Stage Distribution -->
-    <div class="section">
-      <h3>SRS Stage Distribution</h3>
-      <div class="stage-distribution">
-        <div *ngFor="let stage of getStageEntries()" class="stage-item">
-          <div class="stage-bar">
-            <div
-              class="stage-fill"
-              [style.width.%]="(stage.count / stats.total_items) * 100"
-              [style.background-color]="stage.color"
-            ></div>
-          </div>
-          <div class="stage-info">
-            <span class="stage-name" [style.color]="stage.color">{{ stage.name }}</span>
-            <span class="stage-count">{{ stage.count }}</span>
+    <!-- Two Column Grid: Stage Distribution and Upcoming Reviews -->
+    <div class="dashboard-grid">
+      <!-- SRS Stage Distribution -->
+      <div class="section stage-distribution-section">
+        <h3>SRS Stage Distribution</h3>
+        <div class="stage-histogram">
+          <div *ngFor="let stage of getStageEntries()" class="histogram-bar">
+            <div class="bar-label">{{ getStageLabelShort(stage.name) }}</div>
+            <div class="bar-container">
+              <div
+                class="bar-fill"
+                [style.width.%]="stats.total_items > 0 ? (stage.count / stats.total_items) * 100 : 0"
+                [style.background-color]="stage.color"
+              ></div>
+            </div>
+            <div class="bar-count">{{ stage.count }}</div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Upcoming Reviews -->
-    <div class="section upcoming-reviews" *ngIf="upcomingReviews.length > 0">
+      <!-- Upcoming Reviews -->
+      <div class="section upcoming-reviews" *ngIf="upcomingReviews.length > 0">
+      <h3>Upcoming Reviews</h3>
       <div class="upcoming-header">
         <div class="upcoming-title">
           <span class="next-24">Next 24 Hours:</span>
@@ -97,7 +98,7 @@
               ></div>
             </div>
             <div class="day-new-count">(+{{ upcoming.new_count }})</div>
-            <div class="day-total-count">{{ upcoming.count }}</div>
+            <div class="day-total-count">{{ stats.reviews_due_now + upcoming.count }}</div>
             <div class="day-chevron">›</div>
           </div>
         </div>
@@ -107,7 +108,7 @@
           <div class="hourly-header" (click)="toggleDayExpansion(expandedDate)">
             <span class="back-chevron">‹</span>
             <span class="day-title">{{ formatDate(expandedDate) }}</span>
-            <span class="day-summary">(+{{ getExpandedDayNewCount() }}) {{ getExpandedDayTotalCount() }}</span>
+            <span class="day-summary">(+{{ getExpandedDayNewCount() }}) {{ stats.reviews_due_now + getExpandedDayTotalCount() }}</span>
           </div>
           <div class="hourly-list">
             <div *ngFor="let hourly of hourlyReviews" class="hourly-item">
@@ -119,10 +120,11 @@
                 ></div>
               </div>
               <div class="hourly-new-count">(+{{ hourly.new_count }})</div>
-              <div class="hourly-total-count">{{ hourly.count }}</div>
+              <div class="hourly-total-count">{{ stats.reviews_due_now + hourly.count }}</div>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   </div>
