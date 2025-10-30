@@ -10,12 +10,12 @@ export enum SRSStage {
   ENLIGHTENED = 7,
 }
 
-// SRS stage intervals in hours
+// SRS stage intervals in hours (matching WaniKani)
 export const SRS_INTERVALS: Record<SRSStage, number> = {
   [SRSStage.APPRENTICE_1]: 4,      // 4 hours
   [SRSStage.APPRENTICE_2]: 8,      // 8 hours
   [SRSStage.APPRENTICE_3]: 24,     // 1 day
-  [SRSStage.APPRENTICE_4]: 72,     // 3 days
+  [SRSStage.APPRENTICE_4]: 48,     // 2 days
   [SRSStage.GURU_1]: 168,          // 1 week
   [SRSStage.GURU_2]: 336,          // 2 weeks
   [SRSStage.MASTER]: 720,          // 1 month (30 days)

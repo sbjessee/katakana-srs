@@ -109,13 +109,13 @@ No automated linting/formatting scripts configured. Rely on TypeScript strict mo
 
 ## SRS System
 
-8-stage progression with time intervals:
-- **Apprentice I-IV**: 4h → 8h → 1d → 3d
+8-stage progression with time intervals (matching WaniKani):
+- **Apprentice I-IV**: 4h → 8h → 1d → 2d
 - **Guru I-II**: 1w → 2w
 - **Master**: 1 month
 - **Enlightened**: 4 months
 
-Correct answers advance stage; incorrect answers reset to Apprentice I.
+Correct answers advance stage; incorrect answers reset to Apprentice I (ensuring same-day review).
 
 ## Lesson System
 

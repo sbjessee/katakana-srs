@@ -93,6 +93,36 @@ export const initializeDatabase = (): void => {
     seedLessonBatches(database);
     console.log('Lesson batches seeded successfully');
   }
+
+  // Run migrations for existing data
+  migrateApprentice4Intervals(database);
+};
+
+/**
+ * Migration: Update APPRENTICE_4 reviews to use new 48-hour interval (down from 72 hours)
+ * This brings the schedule in line with WaniKani's timing.
+ * Safe to run multiple times (idempotent).
+ */
+const migrateApprentice4Intervals = (database: Database.Database): void => {
+  // Update all APPRENTICE_4 (stage 3) reviews that have been reviewed
+  // Recalculate next_review_date as last_reviewed + 48 hours
+  // If the calculated date is in the past, set to now (make it due immediately)
+  const query = `
+    UPDATE reviews
+    SET next_review_date = MAX(
+      datetime(last_reviewed, '+48 hours'),
+      datetime('now')
+    )
+    WHERE srs_stage = 3
+    AND last_reviewed IS NOT NULL
+    AND datetime(next_review_date) > datetime('now')
+  `;
+
+  const result = database.prepare(query).run();
+
+  if (result.changes > 0) {
+    console.log(`Migration: Updated ${result.changes} APPRENTICE_4 review(s) to new 48-hour interval`);
+  }
 };
 
 // Lookup table for katakana character types
