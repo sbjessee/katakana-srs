@@ -76,11 +76,13 @@ export interface DashboardStats {
 export interface UpcomingReview {
   date: string;
   count: number;
+  new_count: number;
 }
 
 export interface HourlyReview {
   hour: number;
   count: number;
+  new_count: number;
 }
 
 export interface ApiResponse<T> {

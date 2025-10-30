@@ -158,7 +158,8 @@ export class SRSService {
   /**
    * Get upcoming reviews for the next 7 days
    */
-  getUpcomingReviews(): Array<{ date: string, count: number }> {
+  getUpcomingReviews(): Array<{ date: string, count: number, new_count: number }> {
+    // Get all review dates within the next 7 days
     const query = `
       SELECT
         date(next_review_date) as review_date,
@@ -170,13 +171,26 @@ export class SRSService {
     `;
 
     const results = this.db.prepare(query).all() as Array<{ review_date: string, count: number }>;
-    return results.map(row => ({ date: row.review_date, count: row.count }));
+    
+    // Calculate cumulative counts to derive "new" items for each day
+    let cumulative = 0;
+    return results.map(row => {
+      const dayCount = row.count;
+      const newCount = dayCount; // Items due on this specific day
+      cumulative += dayCount;
+      
+      return { 
+        date: row.review_date, 
+        count: cumulative,  // Total items due by end of this day
+        new_count: newCount // New items becoming due on this day
+      };
+    });
   }
 
   /**
    * Get hourly breakdown of reviews for a specific date
    */
-  getHourlyReviewsForDate(date: string): Array<{ hour: number, count: number }> {
+  getHourlyReviewsForDate(date: string): Array<{ hour: number, count: number, new_count: number }> {
     const query = `
       SELECT
         CAST(strftime('%H', next_review_date) AS INTEGER) as hour,
@@ -187,7 +201,21 @@ export class SRSService {
       ORDER BY hour ASC
     `;
 
-    return this.db.prepare(query).all(date) as Array<{ hour: number, count: number }>;
+    const results = this.db.prepare(query).all(date) as Array<{ hour: number, count: number }>;
+    
+    // Calculate cumulative counts to derive "new" items for each hour
+    let cumulative = 0;
+    return results.map(row => {
+      const hourCount = row.count;
+      const newCount = hourCount; // Items due in this specific hour
+      cumulative += hourCount;
+      
+      return {
+        hour: row.hour,
+        count: cumulative,  // Total items due by end of this hour
+        new_count: newCount // New items becoming due in this hour
+      };
+    });
   }
 
   /**

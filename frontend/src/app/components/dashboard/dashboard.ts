@@ -101,4 +101,55 @@ export class DashboardComponent implements OnInit {
     if (hour === 12) return '12 PM';
     return `${hour - 12} PM`;
   }
+
+  get next24HoursCount(): number {
+    const now = new Date();
+    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    return this.upcomingReviews
+      .filter(review => {
+        const [year, month, day] = review.date.split('-').map(Number);
+        const reviewDate = new Date(year, month - 1, day);
+        return reviewDate <= tomorrow;
+      })
+      .reduce((sum, review) => sum + review.new_count, 0);
+  }
+
+  formatDayName(dateString: string): string {
+    const [year, month, day] = dateString.split('-').map(Number);
+    const reviewDate = new Date(year, month - 1, day);
+    reviewDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const diffTime = reviewDate.getTime() - today.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+
+    // Return day name abbreviation (Mon, Tue, Wed, etc.)
+    return reviewDate.toLocaleDateString('en-US', { weekday: 'short' });
+  }
+
+  getMaxNewCount(): number {
+    return Math.max(...this.upcomingReviews.map(r => r.new_count), 1);
+  }
+
+  getMaxHourlyNewCount(): number {
+    return Math.max(...this.hourlyReviews.map(r => r.new_count), 1);
+  }
+
+  getExpandedDayNewCount(): number {
+    if (!this.expandedDate) return 0;
+    const review = this.upcomingReviews.find(r => r.date === this.expandedDate);
+    return review?.new_count || 0;
+  }
+
+  getExpandedDayTotalCount(): number {
+    if (!this.expandedDate) return 0;
+    const review = this.upcomingReviews.find(r => r.date === this.expandedDate);
+    return review?.count || 0;
+  }
 }

@@ -77,23 +77,49 @@
     </div>
 
     <!-- Upcoming Reviews -->
-    <div class="section" *ngIf="upcomingReviews.length > 0">
-      <h3>Upcoming Reviews (Next 7 Days)</h3>
+    <div class="section upcoming-reviews" *ngIf="upcomingReviews.length > 0">
+      <div class="upcoming-header">
+        <div class="upcoming-title">
+          <span class="next-24">Next 24 Hours:</span>
+          <span class="next-24-count">+{{ next24HoursCount }} Items</span>
+        </div>
+      </div>
+
       <div class="upcoming-list">
-        <div *ngFor="let upcoming of upcomingReviews" class="upcoming-day">
-          <div
-            class="upcoming-item"
-            [class.expanded]="expandedDate === upcoming.date"
-            (click)="toggleDayExpansion(upcoming.date)"
-          >
-            <span class="chevron">{{ expandedDate === upcoming.date ? '▼' : '▶' }}</span>
-            <span class="upcoming-date">{{ formatDate(upcoming.date) }}</span>
-            <span class="upcoming-count">{{ upcoming.count }} reviews</span>
+        <!-- Daily view -->
+        <div *ngIf="!expandedDate">
+          <div *ngFor="let upcoming of upcomingReviews" class="upcoming-day-item" (click)="toggleDayExpansion(upcoming.date)">
+            <div class="day-name">{{ formatDayName(upcoming.date) }}</div>
+            <div class="day-bar-container">
+              <div
+                class="day-bar"
+                [style.width.%]="(upcoming.new_count / getMaxNewCount()) * 100"
+              ></div>
+            </div>
+            <div class="day-new-count">(+{{ upcoming.new_count }})</div>
+            <div class="day-total-count">{{ upcoming.count }}</div>
+            <div class="day-chevron">›</div>
           </div>
-          <div class="hourly-list" *ngIf="expandedDate === upcoming.date && hourlyReviews.length > 0">
+        </div>
+
+        <!-- Hourly view (when day is expanded) -->
+        <div *ngIf="expandedDate" class="hourly-view">
+          <div class="hourly-header" (click)="toggleDayExpansion(expandedDate)">
+            <span class="back-chevron">‹</span>
+            <span class="day-title">{{ formatDate(expandedDate) }}</span>
+            <span class="day-summary">(+{{ getExpandedDayNewCount() }}) {{ getExpandedDayTotalCount() }}</span>
+          </div>
+          <div class="hourly-list">
             <div *ngFor="let hourly of hourlyReviews" class="hourly-item">
-              <span class="hourly-time">{{ formatHour(hourly.hour) }}</span>
-              <span class="hourly-count">{{ hourly.count }} {{ hourly.count === 1 ? 'review' : 'reviews' }}</span>
+              <div class="hourly-time">{{ formatHour(hourly.hour) }}</div>
+              <div class="hourly-bar-container">
+                <div
+                  class="hourly-bar"
+                  [style.width.%]="(hourly.new_count / getMaxHourlyNewCount()) * 100"
+                ></div>
+              </div>
+              <div class="hourly-new-count">(+{{ hourly.new_count }})</div>
+              <div class="hourly-total-count">{{ hourly.count }}</div>
             </div>
           </div>
         </div>

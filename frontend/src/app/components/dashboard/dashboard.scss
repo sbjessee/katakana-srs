@@ -139,62 +139,104 @@
   color: var(--text-secondary);
 }
 
-.upcoming-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+// Upcoming Reviews Section
+.upcoming-reviews {
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
-.upcoming-day {
-  display: flex;
-  flex-direction: column;
-}
-
-.upcoming-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
+.upcoming-header {
+  padding: 1.5rem 2rem;
   background-color: var(--bg-tertiary);
-  border-radius: 6px;
-  transition: all 0.2s;
-  cursor: pointer;
-  gap: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.upcoming-item:hover {
-  background-color: var(--bg-primary);
-  transform: translateX(2px);
-}
-
-.upcoming-item.expanded {
-  background-color: var(--bg-primary);
-}
-
-.chevron {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  transition: transform 0.2s;
-  width: 1rem;
-  display: inline-block;
-}
-
-.upcoming-date {
-  font-weight: 500;
-  color: var(--color-primary);
-  flex: 1;
-}
-
-.upcoming-count {
-  color: var(--text-secondary);
-}
-
-.hourly-list {
+.upcoming-title {
   display: flex;
-  flex-direction: column;
+  align-items: baseline;
   gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding-left: 2rem;
+}
+
+.next-24 {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.next-24-count {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.upcoming-list {
+  padding: 0 1rem 1rem 1rem;
+}
+
+// Daily view items
+.upcoming-day-item {
+  display: grid;
+  grid-template-columns: 50px 1fr auto auto 30px;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+  margin-bottom: 0.5rem;
+}
+
+.upcoming-day-item:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.day-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.day-bar-container {
+  height: 24px;
+  background-color: var(--bg-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.day-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-correct), var(--color-guru));
+  border-radius: 4px;
+  min-width: 2px;
+  transition: width 0.3s ease;
+}
+
+.day-new-count {
+  font-weight: 600;
+  color: var(--color-correct);
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.day-total-count {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  min-width: 30px;
+  text-align: right;
+}
+
+.day-chevron {
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+// Hourly view
+.hourly-view {
   animation: slideDown 0.2s ease-out;
 }
 
@@ -209,25 +251,93 @@
   }
 }
 
-.hourly-item {
+.hourly-header {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.hourly-header:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.back-chevron {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--text-secondary);
+}
+
+.day-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+}
+
+.day-summary {
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin-left: auto;
+}
+
+.day-summary::before {
+  content: '';
+  display: inline;
+}
+
+.hourly-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hourly-item {
+  display: grid;
+  grid-template-columns: 70px 1fr auto auto;
+  gap: 0.75rem;
   align-items: center;
   padding: 0.75rem 1rem;
-  background-color: var(--bg-secondary);
-  border-radius: 4px;
-  border-left: 3px solid var(--color-primary);
+  border-radius: 6px;
 }
 
 .hourly-time {
   font-weight: 500;
   color: var(--text-primary);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
-.hourly-count {
+.hourly-bar-container {
+  height: 20px;
+  background-color: var(--bg-primary);
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.hourly-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-correct), var(--color-guru));
+  border-radius: 4px;
+  min-width: 2px;
+  transition: width 0.3s ease;
+}
+
+.hourly-new-count {
+  font-weight: 600;
+  color: var(--color-correct);
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.hourly-total-count {
   color: var(--text-secondary);
   font-size: 0.9rem;
+  min-width: 25px;
+  text-align: right;
 }
 
 @media (max-width: 768px) {
