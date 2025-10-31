@@ -109,13 +109,19 @@ No automated linting/formatting scripts configured. Rely on TypeScript strict mo
 
 ## SRS System
 
-8-stage progression with time intervals (matching WaniKani):
-- **Apprentice I-IV**: 4h → 8h → 1d → 2d
+8-stage progression with WaniKani's **accelerated schedule** (levels 1-2):
+- **Apprentice I-IV**: 2h → 4h → 8h → 1d
 - **Guru I-II**: 1w → 2w
 - **Master**: 1 month
 - **Enlightened**: 4 months
 
-Correct answers advance stage; incorrect answers reset to Apprentice I (ensuring same-day review).
+**Progression:**
+- Correct answers advance one stage (max: Enlightened)
+- Incorrect answers drop by penalty: **-1 stage** for Apprentice (stages 0-3), **-2 stages** for Guru+ (stages 4-7), minimum Apprentice I
+
+**Review timing:**
+- All review times rounded down to the top of the hour (WaniKani behavior)
+- New items from lessons always start at Apprentice I regardless of quiz performance
 
 ## Lesson System
 

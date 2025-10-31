@@ -95,33 +95,57 @@ export const initializeDatabase = (): void => {
   }
 
   // Run migrations for existing data
-  migrateApprentice4Intervals(database);
+  migrateToAcceleratedSchedule(database);
 };
 
 /**
- * Migration: Update APPRENTICE_4 reviews to use new 48-hour interval (down from 72 hours)
- * This brings the schedule in line with WaniKani's timing.
+ * Migration: Update all reviews to use WaniKani's accelerated schedule (levels 1-2)
+ * - Apprentice I: 4h → 2h
+ * - Apprentice II: 8h → 4h
+ * - Apprentice III: 1d → 8h
+ * - Apprentice IV: 2d → 1d
+ * - Round all times to the top of the hour
  * Safe to run multiple times (idempotent).
  */
-const migrateApprentice4Intervals = (database: Database.Database): void => {
-  // Update all APPRENTICE_4 (stage 3) reviews that have been reviewed
-  // Recalculate next_review_date as last_reviewed + 48 hours
-  // If the calculated date is in the past, set to now (make it due immediately)
-  const query = `
+const migrateToAcceleratedSchedule = (database: Database.Database): void => {
+  // Update reviews that have been reviewed - recalculate based on last_reviewed + new interval
+  const updateReviewed = `
     UPDATE reviews
-    SET next_review_date = MAX(
-      datetime(last_reviewed, '+48 hours'),
-      datetime('now')
-    )
-    WHERE srs_stage = 3
-    AND last_reviewed IS NOT NULL
-    AND datetime(next_review_date) > datetime('now')
+    SET next_review_date = CASE
+      WHEN srs_stage = 0 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(last_reviewed, '+2 hours')))
+      WHEN srs_stage = 1 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(last_reviewed, '+4 hours')))
+      WHEN srs_stage = 2 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(last_reviewed, '+8 hours')))
+      WHEN srs_stage = 3 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(last_reviewed, '+24 hours')))
+      WHEN srs_stage = 4 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(last_reviewed, '+168 hours')))
+      WHEN srs_stage = 5 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(last_reviewed, '+336 hours')))
+      WHEN srs_stage = 6 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(last_reviewed, '+720 hours')))
+      WHEN srs_stage = 7 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(last_reviewed, '+2880 hours')))
+    END
+    WHERE last_reviewed IS NOT NULL
   `;
 
-  const result = database.prepare(query).run();
+  // Update reviews that haven't been reviewed yet - recalculate based on created_at + new interval
+  const updateNotReviewed = `
+    UPDATE reviews
+    SET next_review_date = CASE
+      WHEN srs_stage = 0 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(created_at, '+2 hours')))
+      WHEN srs_stage = 1 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(created_at, '+4 hours')))
+      WHEN srs_stage = 2 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(created_at, '+8 hours')))
+      WHEN srs_stage = 3 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(created_at, '+24 hours')))
+      WHEN srs_stage = 4 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(created_at, '+168 hours')))
+      WHEN srs_stage = 5 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(created_at, '+336 hours')))
+      WHEN srs_stage = 6 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(created_at, '+720 hours')))
+      WHEN srs_stage = 7 THEN datetime(strftime('%Y-%m-%d %H:00:00', datetime(created_at, '+2880 hours')))
+    END
+    WHERE last_reviewed IS NULL
+  `;
 
-  if (result.changes > 0) {
-    console.log(`Migration: Updated ${result.changes} APPRENTICE_4 review(s) to new 48-hour interval`);
+  const result1 = database.prepare(updateReviewed).run();
+  const result2 = database.prepare(updateNotReviewed).run();
+
+  const totalChanges = result1.changes + result2.changes;
+  if (totalChanges > 0) {
+    console.log(`Migration: Updated ${totalChanges} review(s) to accelerated schedule with rounded times`);
   }
 };
 

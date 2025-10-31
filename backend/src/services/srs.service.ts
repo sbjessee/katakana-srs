@@ -44,14 +44,20 @@ export class SRSService {
       // Advance to next stage (max: ENLIGHTENED = 7)
       newStage = Math.min(review.srs_stage + 1, SRSStage.ENLIGHTENED) as SRSStage;
     } else {
-      // Incorrect answer: drop back to APPRENTICE_1 (0)
-      newStage = SRSStage.APPRENTICE_1;
+      // Incorrect answer: use WaniKani penalty formula
+      // Penalty factor: 2 for Guru+ (stages 4-7), 1 for Apprentice (stages 0-3)
+      const penaltyFactor = review.srs_stage >= SRSStage.GURU_1 ? 2 : 1;
+      // Drop by penalty factor, but minimum stage is APPRENTICE_1 (0)
+      newStage = Math.max(review.srs_stage - penaltyFactor, SRSStage.APPRENTICE_1) as SRSStage;
     }
 
     // Calculate next review date based on new stage
     const intervalHours = SRS_INTERVALS[newStage];
     const nextReviewDate = new Date();
     nextReviewDate.setHours(nextReviewDate.getHours() + intervalHours);
+
+    // Round down to the beginning of the hour (WaniKani behavior)
+    nextReviewDate.setMinutes(0, 0, 0);
 
     // Update the review
     const updateQuery = `

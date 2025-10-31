@@ -57,7 +57,7 @@ export class LessonService {
    * Complete a lesson batch
    * - Marks the batch as completed
    * - Creates reviews for all katakana in the batch (if not already created)
-   * - Quiz results determine initial SRS stage (correct on first try = stage 1, otherwise stage 0)
+   * - All items start at Apprentice I (stage 0) regardless of quiz performance (WaniKani behavior)
    */
   completeLesson(batchNumber: number, quizResults?: Array<{ katakanaId: number, correct: boolean }>): void {
     const updateBatch = this.db.prepare(`
@@ -71,7 +71,7 @@ export class LessonService {
       SELECT id FROM katakana WHERE lesson_batch_number = ?
     `);
 
-    // Create a map of quiz results for quick lookup
+    // Create a map of quiz results for tracking stats only
     const quizResultsMap = new Map<number, boolean>();
     if (quizResults) {
       for (const result of quizResults) {
@@ -80,7 +80,7 @@ export class LessonService {
     }
 
     // Insert reviews for katakana that don't have reviews yet
-    // Stage 0 (APPRENTICE_1) = 4 hours, Stage 1 (APPRENTICE_2) = 8 hours
+    // All items start at stage 0 (APPRENTICE_1) with 2 hour interval (accelerated timing)
     const insertReview = this.db.prepare(`
       INSERT OR IGNORE INTO reviews (
         katakana_id,
@@ -89,7 +89,7 @@ export class LessonService {
         correct_count,
         incorrect_count
       )
-      VALUES (?, ?, datetime('now', ? || ' hours'), ?, ?)
+      VALUES (?, 0, ?, ?, ?)
     `);
 
     const transaction = this.db.transaction(() => {
@@ -99,13 +99,17 @@ export class LessonService {
       // Create reviews for all katakana in this batch
       const katakanaIds = getKatakana.all(batchNumber) as Array<{ id: number }>;
       for (const { id } of katakanaIds) {
+        // Calculate next review date: 2 hours from now, rounded down to the hour
+        const nextReview = new Date();
+        nextReview.setHours(nextReview.getHours() + 2);
+        nextReview.setMinutes(0, 0, 0);
+
+        // Track quiz performance for stats
         const correctOnFirstTry = quizResultsMap.get(id) ?? false;
-        const initialStage = correctOnFirstTry ? 1 : 0; // APPRENTICE_2 or APPRENTICE_1
-        const intervalHours = correctOnFirstTry ? 8 : 4;
         const correctCount = correctOnFirstTry ? 1 : 0;
         const incorrectCount = correctOnFirstTry ? 0 : 1;
 
-        insertReview.run(id, initialStage, `+${intervalHours}`, correctCount, incorrectCount);
+        insertReview.run(id, nextReview.toISOString(), correctCount, incorrectCount);
       }
     });
 
