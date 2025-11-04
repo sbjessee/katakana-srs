@@ -118,14 +118,26 @@ export class LessonComponent implements OnInit {
   }
 
   startQuiz() {
-    // Shuffle lesson items for quiz
-    this.quizItems = [...this.lessonItems].sort(() => Math.random() - 0.5);
+    // Shuffle lesson items for quiz using Fisher-Yates algorithm
+    this.quizItems = this.shuffleArray([...this.lessonItems]);
     this.quizIndex = 0;
     this.quizResults = [];
     this.firstAttemptResults.clear();
     this.userAnswer = '';
     this.showQuizFeedback = false;
     this.mode = 'quiz';
+  }
+
+  /**
+   * Shuffle an array using Fisher-Yates algorithm
+   */
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 
   get currentQuizItem(): LessonItem | null {
@@ -151,9 +163,24 @@ export class LessonComponent implements OnInit {
       this.firstAttemptResults.set(this.currentQuizItem.id, this.isQuizCorrect);
     }
 
-    // If incorrect, add this item back to the end of the queue
+    // If incorrect, add this item back into the queue smartly
     if (!this.isQuizCorrect) {
-      this.quizItems.push(this.currentQuizItem);
+      const remainingCount = this.quizItems.length - this.quizIndex - 1;
+
+      if (remainingCount === 0) {
+        // This is the last item, just append to the end
+        this.quizItems.push(this.currentQuizItem);
+      } else if (remainingCount === 1) {
+        // Only one item left, add to the end (don't make it immediate next)
+        this.quizItems.push(this.currentQuizItem);
+      } else {
+        // Multiple items remaining: insert at a random position that's not immediately next
+        // Insert between quizIndex + 2 and end of array
+        const minInsertPos = this.quizIndex + 2;
+        const maxInsertPos = this.quizItems.length;
+        const insertPos = Math.floor(Math.random() * (maxInsertPos - minInsertPos + 1)) + minInsertPos;
+        this.quizItems.splice(insertPos, 0, this.currentQuizItem);
+      }
     }
 
     // Keep the input focused and select text so keyboard doesn't disappear on mobile
