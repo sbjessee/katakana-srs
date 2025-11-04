@@ -34,7 +34,8 @@ export class ReviewComponent implements OnInit {
     this.isLoading = true;
     this.apiService.getDueReviews().subscribe({
       next: (reviews) => {
-        this.reviews = reviews;
+        // Randomize the order of reviews
+        this.reviews = this.shuffleArray(reviews);
         // Initialize notes map
         reviews.forEach(review => {
           if (review.user_note) {
@@ -51,6 +52,18 @@ export class ReviewComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  /**
+   * Shuffle an array using Fisher-Yates algorithm
+   */
+  private shuffleArray<T>(array: T[]): T[] {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
   }
 
   get currentReview(): ReviewWithKatakana | null {
@@ -95,9 +108,24 @@ export class ReviewComponent implements OnInit {
     this.isCorrect = normalizedAnswer === correctAnswer;
     this.showFeedback = true;
 
-    // If incorrect, add this item back to the end of the queue
+    // If incorrect, add this item back into the queue smartly
     if (!this.isCorrect) {
-      this.reviews.push(this.currentReview);
+      const remainingCount = this.reviews.length - this.currentIndex - 1;
+
+      if (remainingCount === 0) {
+        // This is the last item, just append to the end
+        this.reviews.push(this.currentReview);
+      } else if (remainingCount === 1) {
+        // Only one item left, add to the end (don't make it immediate next)
+        this.reviews.push(this.currentReview);
+      } else {
+        // Multiple items remaining: insert at a random position that's not immediately next
+        // Insert between currentIndex + 2 and end of array
+        const minInsertPos = this.currentIndex + 2;
+        const maxInsertPos = this.reviews.length;
+        const insertPos = Math.floor(Math.random() * (maxInsertPos - minInsertPos + 1)) + minInsertPos;
+        this.reviews.splice(insertPos, 0, this.currentReview);
+      }
     }
 
     // Submit to backend
